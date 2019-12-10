@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="croco" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="webmagic介绍简单架构WebMagic项目代码分为核心和扩展两部分。核心部分(webmagic-core)是一个精简的、模块化的爬虫实现，而扩展部分则包括一些便利的、实用性的功能。WebMagic的架构设计参照了Scrapy，目标是尽量的模块化，并体现爬虫的功能特点。 扩展部分(webmagic-extension)提供一些便捷的功能，例如注解模式编写爬虫等。同时内置了一些常用的组件，便于爬">
+<meta property="og:type" content="article">
+<meta property="og:title" content="webmagic简介">
+<meta property="og:url" content="http:&#x2F;&#x2F;yoursite.com&#x2F;2018&#x2F;01&#x2F;31&#x2F;webmagic%E7%AE%80%E4%BB%8B&#x2F;index.html">
+<meta property="og:site_name" content="croco">
+<meta property="og:description" content="webmagic介绍简单架构WebMagic项目代码分为核心和扩展两部分。核心部分(webmagic-core)是一个精简的、模块化的爬虫实现，而扩展部分则包括一些便利的、实用性的功能。WebMagic的架构设计参照了Scrapy，目标是尽量的模块化，并体现爬虫的功能特点。 扩展部分(webmagic-extension)提供一些便捷的功能，例如注解模式编写爬虫等。同时内置了一些常用的组件，便于爬">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https:&#x2F;&#x2F;o364p1r5a.qnssl.com&#x2F;blog&#x2F;14642364175906.jpg">
+<meta property="og:updated_time" content="2019-11-23T01:50:10.643Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https:&#x2F;&#x2F;o364p1r5a.qnssl.com&#x2F;blog&#x2F;14642364175906.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/01/31/webmagic简介/"/>
+
+
+
+
+
+  <title>webmagic简介 | croco</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">croco</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">若非心中存在远方，恐怕早已失去方向</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/01/31/webmagic%E7%AE%80%E4%BB%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="croco">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="croco">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">webmagic简介</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-01-31T19:47:00+00:00">
+                2018-01-31
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/webmagic/" itemprop="url" rel="index">
+                    <span itemprop="name">webmagic</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="webmagic介绍"><a href="#webmagic介绍" class="headerlink" title="webmagic介绍"></a>webmagic介绍</h1><h2 id="简单架构"><a href="#简单架构" class="headerlink" title="简单架构"></a>简单架构</h2><p><img src="https://o364p1r5a.qnssl.com/blog/14642364175906.jpg" alt=""><br>WebMagic项目代码分为核心和扩展两部分。核心部分(webmagic-core)是一个精简的、模块化的爬虫实现，而扩展部分则包括一些便利的、实用性的功能。WebMagic的架构设计参照了Scrapy，目标是尽量的模块化，并体现爬虫的功能特点。</p>
+<p>扩展部分(webmagic-extension)提供一些便捷的功能，例如注解模式编写爬虫等。同时内置了一些常用的组件，便于爬虫开发</p>
+<h2 id="设计思想"><a href="#设计思想" class="headerlink" title="设计思想"></a>设计思想</h2><p>WebMagic由四个组件(Downloader、PageProcessor、Scheduler、Pipeline)构成，核心代码非常简单，主要是将这些组件结合并完成多线程的任务。在WebMagic中，你基本上可以对爬虫的功能做任何定制。</p>
+<p>WebMagic的核心在webmagic-core包中，其他的包你可以理解为对WebMagic的一个扩展——这和作为用户编写一个扩展是没有什么区别的。</p>
+<p>虽然WebMagic的核心足够简单，但是WebMagic也以扩展的方式，实现了很多可以帮助开发的便捷功能。例如基于注解模式的爬虫开发，以及扩展了XPath语法的Xsoup等。这些功能在WebMagic中是可选的，它们的开发目标，就是让使用者开发爬虫尽可能的简单，尽可能的易维护。</p>
+<h2 id="四大组件"><a href="#四大组件" class="headerlink" title="四大组件"></a>四大组件</h2><h3 id="Downloader"><a href="#Downloader" class="headerlink" title="Downloader"></a>Downloader</h3><p>Downloader负责从互联网上下载页面，以便后续处理。WebMagic默认使用了Apache HttpClient作为下载工具。</p>
+<h3 id="PageProcessor"><a href="#PageProcessor" class="headerlink" title="PageProcessor"></a>PageProcessor</h3><p>爬虫逻辑，程序的核心<br>PageProcessor负责解析页面，抽取有用信息，以及发现新的链接。WebMagic使用Jsoup作为HTML解析工具，并基于其开发了解析XPath的工具Xsoup。<br>在这四个组件中，PageProcessor对于每个站点每个页面都不一样，是需要使用者定制的部分。</p>
+<h3 id="Scheduler"><a href="#Scheduler" class="headerlink" title="Scheduler"></a>Scheduler</h3><p>Scheduler负责管理待抓取的URL，以及一些去重的工作。WebMagic默认提供了JDK的内存队列来管理URL，并用集合来进行去重。也支持使用Redis进行分布式管理。<br>除非项目有一些特殊的分布式需求，否则无需自己定制Scheduler。</p>
+<h3 id="Pipeline"><a href="#Pipeline" class="headerlink" title="Pipeline"></a>Pipeline</h3><p>Pipeline负责抽取结果的处理，包括计算、持久化到文件、数据库等。WebMagic默认提供了“输出到控制台”和“保存到文件”两种结果处理方案。<br>Pipeline定义了结果保存的方式，如果你要保存到指定数据库，则需要编写对应的Pipeline。对于一类需求一般只需编写一个Pipeline。</p>
+<h2 id="用于数据流转的对象"><a href="#用于数据流转的对象" class="headerlink" title="用于数据流转的对象"></a>用于数据流转的对象</h2><p>WebMagic 主要有3个数据流转对象。分别是Request、Page、ResultItems。  </p>
+<h3 id="Request"><a href="#Request" class="headerlink" title="Request"></a>Request</h3><p>Request是对URL地址的一层封装，一个Request对应一个URL地址。<br>它是PageProcessor与Downloader交互的载体，也是PageProcessor控制Downloader唯一方式。<br>除了URL本身外，它还包含一个Key-Value结构的字段extra。你可以在extra中保存一些特殊的属性，然后在其他地方读取，以完成不同的功能。例如附加上一个页面的一些信息等。</p>
+<h3 id="page"><a href="#page" class="headerlink" title="page"></a>page</h3><p>Page代表了从Downloader下载到的一个页面——可能是HTML，也可能是JSON或者其他文本格式的内容。<br>Page是WebMagic抽取过程的核心对象，它提供一些方法可供抽取、结果保存等。在第四章的例子中，我们会详细介绍它的使用。</p>
+<h3 id="ResultItems"><a href="#ResultItems" class="headerlink" title="ResultItems"></a>ResultItems</h3><p>ResultItems相当于一个Map，它保存PageProcessor处理的结果，供Pipeline使用。它的API与Map很类似，值得注意的是它有一个字段skip，若设置为true，则不应被Pipeline处理。</p>
+<h3 id="Spider"><a href="#Spider" class="headerlink" title="Spider"></a>Spider</h3><p>Spider是WebMagic内部流程的核心。Downloader、PageProcessor、Scheduler、Pipeline都是Spider的一个属性，这些属性是可以自由设置的，通过设置这个属性可以实现不同的功能。Spider也是WebMagic操作的入口，它封装了爬虫的创建、启动、停止、多线程等功能。下面是一个设置各个组件，并且设置多线程和启动的例子。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    Spider.create(new GithubRepoPageProcessor())</span><br><span class="line">            //从www.xttblog.com开始抓   </span><br><span class="line">            .addUrl(&quot;https://www.xttblog.com&quot;)</span><br><span class="line">            //设置Scheduler，使用Redis来管理URL队列</span><br><span class="line">            .setScheduler(new RedisScheduler(&quot;localhost&quot;))</span><br><span class="line">            //设置Pipeline，将结果以json方式保存到文件</span><br><span class="line">            .addPipeline(new JsonFilePipeline(&quot;D:\\data\\webmagic&quot;))</span><br><span class="line">            //开启5个线程同时执行</span><br><span class="line">            .thread(5)</span><br><span class="line">            //启动爬虫</span><br><span class="line">            .run();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="构建项目"><a href="#构建项目" class="headerlink" title="构建项目"></a>构建项目</h1><h2 id="引入依赖"><a href="#引入依赖" class="headerlink" title="引入依赖"></a>引入依赖</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;  </span><br><span class="line">    &lt;groupId&gt;us.codecraft&lt;/groupId&gt;  </span><br><span class="line">    &lt;artifactId&gt;webmagic-core&lt;/artifactId&gt;  </span><br><span class="line">    &lt;version&gt;0.7.3&lt;/version&gt;  </span><br><span class="line">&lt;/dependency&gt;  </span><br><span class="line">&lt;dependency&gt;  </span><br><span class="line">    &lt;groupId&gt;us.codecraft&lt;/groupId&gt;  </span><br><span class="line">    &lt;artifactId&gt;webmagic-extension&lt;/artifactId&gt;  </span><br><span class="line">    &lt;version&gt;0.7.3&lt;/version&gt;  </span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
+<h2 id="定制页面解析代码"><a href="#定制页面解析代码" class="headerlink" title="定制页面解析代码"></a>定制页面解析代码</h2><p>四大组件的说明前面讲过了，对于一般的爬虫来讲，只要定制下PageProcessor就行了</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br></pre></td><td class="code"><pre><span class="line">import java.util.List;</span><br><span class="line"></span><br><span class="line">import us.codecraft.webmagic.Page;</span><br><span class="line">import us.codecraft.webmagic.Site;</span><br><span class="line">import us.codecraft.webmagic.Spider;</span><br><span class="line">import us.codecraft.webmagic.processor.PageProcessor;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * CSDN博客爬虫</span><br><span class="line"> * </span><br><span class="line"> * @describe 可以爬取指定用户的csdn博客所有文章，并保存到数据库中。</span><br><span class="line"> * @date 2016-4-30</span><br><span class="line"> * </span><br><span class="line"> * @author steven</span><br><span class="line"> * @csdn qq598535550</span><br><span class="line"> * @website lyf.soecode.com</span><br><span class="line"> */</span><br><span class="line">public class CsdnBlogPageProcessor implements PageProcessor &#123;</span><br><span class="line"></span><br><span class="line">	private static String username = &quot;qq598535550&quot;;// 设置csdn用户名</span><br><span class="line">	private static int size = 0;// 共抓取到的文章数量</span><br><span class="line"></span><br><span class="line">	// 抓取网站的相关配置，包括：编码、抓取间隔、重试次数等</span><br><span class="line">	private Site site = Site.me().setRetryTimes(3).setSleepTime(1000);</span><br><span class="line"></span><br><span class="line">	@Override</span><br><span class="line">	public Site getSite() &#123;</span><br><span class="line">		return site;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	@Override</span><br><span class="line">	// process是定制爬虫逻辑的核心接口，在这里编写抽取逻辑</span><br><span class="line">	public void process(Page page) &#123;</span><br><span class="line">		// 列表页</span><br><span class="line">		if (!page.getUrl().regex(&quot;http://blog\\.csdn\\.net/&quot; + username + &quot;/article/details/\\d+&quot;).match()) &#123;</span><br><span class="line">			// 添加所有文章页</span><br><span class="line">			page.addTargetRequests(page.getHtml().xpath(&quot;//div[@id=&apos;article_list&apos;]&quot;).links()// 限定文章列表获取区域</span><br><span class="line">					.regex(&quot;/&quot; + username + &quot;/article/details/\\d+&quot;)</span><br><span class="line">					.replace(&quot;/&quot; + username + &quot;/&quot;, &quot;http://blog.csdn.net/&quot; + username + &quot;/&quot;)// 巧用替换给把相对url转换成绝对url</span><br><span class="line">					.all());</span><br><span class="line">			// 添加其他列表页</span><br><span class="line">			page.addTargetRequests(page.getHtml().xpath(&quot;//div[@id=&apos;papelist&apos;]&quot;).links()// 限定其他列表页获取区域</span><br><span class="line">					.regex(&quot;/&quot; + username + &quot;/article/list/\\d+&quot;)</span><br><span class="line">					.replace(&quot;/&quot; + username + &quot;/&quot;, &quot;http://blog.csdn.net/&quot; + username + &quot;/&quot;)// 巧用替换给把相对url转换成绝对url</span><br><span class="line">					.all());</span><br><span class="line">			// 文章页</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			size++;// 文章数量加1</span><br><span class="line">			// 用CsdnBlog类来存抓取到的数据，方便存入数据库</span><br><span class="line">			CsdnBlog csdnBlog = new CsdnBlog();</span><br><span class="line">			// 设置标签（可以有多个，用,来分割）</span><br><span class="line">			csdnBlog.setTags(listToString(page.getHtml()</span><br><span class="line">					.xpath(&quot;//div[@class=&apos;article_l&apos;]/span[@class=&apos;link_categories&apos;]/a/allText()&quot;).all()));</span><br><span class="line">			// 设置类别（可以有多个，用,来分割）</span><br><span class="line">					page.getHtml().xpath(&quot;//div[@class=&apos;article_title&apos;]//span[@class=&apos;link_title&apos;]/a/text()&quot;).get());</span><br><span class="line">			// 设置日期</span><br><span class="line">			csdnBlog.setDate(</span><br><span class="line">					page.getHtml().xpath(&quot;//div[@class=&apos;article_r&apos;]/span[@class=&apos;link_postdate&apos;]/text()&quot;).get());</span><br><span class="line">			// 设置标签组（标签可以有多个，这里用,来分割）</span><br><span class="line">			csdnBlog.setTags(listToString(page.getHtml()</span><br><span class="line">					.xpath(&quot;//div[@class=&apos;article_l&apos;]/span[@class=&apos;link_categories&apos;]/a/allText()&quot;).all()));</span><br><span class="line">			// 设置类别</span><br><span class="line">			csdnBlog.setCategory(</span><br><span class="line">					listToString(page.getHtml().xpath(&quot;//div[@class=&apos;category_r&apos;]/label/span/text()&quot;).all()));</span><br><span class="line">			// 设置阅读人数</span><br><span class="line">			csdnBlog.setView(Integer.parseInt(page.getHtml().xpath(&quot;//div[@class=&apos;article_r&apos;]/span[@class=&apos;link_view&apos;]&quot;)</span><br><span class="line">					.regex(&quot;(\\d+)人阅读&quot;).get()));</span><br><span class="line">			// 设置评论人数</span><br><span class="line">			csdnBlog.setComments(Integer.parseInt(page.getHtml()</span><br><span class="line">					.xpath(&quot;//div[@class=&apos;article_r&apos;]/span[@class=&apos;link_comments&apos;]&quot;).regex(&quot;\\((\\d+)\\)&quot;).get()));</span><br><span class="line">			// 设置是否原创</span><br><span class="line">			csdnBlog.setCopyright(page.getHtml().regex(&quot;bog_copyright&quot;).match() ? 1 : 0);</span><br><span class="line">			// 把对象存入数据库</span><br><span class="line">			new CsdnBlogDao().add(csdnBlog);</span><br><span class="line">			// 把对象输出控制台</span><br><span class="line">			System.out.println(csdnBlog);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	// 把list转换为string，用,分割</span><br><span class="line">	public static String listToString(List&lt;String&gt; stringList) &#123;</span><br><span class="line">		if (stringList == null) &#123;</span><br><span class="line">			return null;</span><br><span class="line">		&#125;</span><br><span class="line">		StringBuilder result = new StringBuilder();</span><br><span class="line">		boolean flag = false;</span><br><span class="line">		for (String string : stringList) &#123;</span><br><span class="line">			if (flag) &#123;</span><br><span class="line">				result.append(&quot;,&quot;);</span><br><span class="line">			&#125; else &#123;</span><br><span class="line">				flag = true;</span><br><span class="line">			&#125;</span><br><span class="line">			result.append(string);</span><br><span class="line">		&#125;</span><br><span class="line">		return result.toString();</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public static void main(String[] args) &#123;</span><br><span class="line">		long startTime, endTime;</span><br><span class="line">		System.out.println(&quot;【爬虫开始】请耐心等待一大波数据到你碗里来...&quot;);</span><br><span class="line">		startTime = System.currentTimeMillis();</span><br><span class="line">		// 从用户博客首页开始抓，开启5个线程，启动爬虫</span><br><span class="line">		Spider.create(new CsdnBlogPageProcessor()).addUrl(&quot;http://blog.csdn.net/&quot; + username).thread(5).run();</span><br><span class="line">		endTime = System.currentTimeMillis();</span><br><span class="line">		System.out.println(&quot;【爬虫结束】共抓取&quot; + size + &quot;篇文章，耗时约&quot; + ((endTime - startTime) / 1000) + &quot;秒，已保存到数据库，请查收！&quot;);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/01/27/hadoop_mapper_reducer/" rel="next" title="mapper_reducer第一个应用">
+                <i class="fa fa-chevron-left"></i> mapper_reducer第一个应用
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/01/31/webmagic%E5%85%A5%E9%97%A8/" rel="prev" title="webmagic入门">
+                webmagic入门 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.gif"
+                alt="croco" />
+            
+              <p class="site-author-name" itemprop="name">croco</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%7C%7Carchive">
+              
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">分类</span>
+                
+              </div>
+            
+
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#webmagic介绍"><span class="nav-number">1.</span> <span class="nav-text">webmagic介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#简单架构"><span class="nav-number">1.1.</span> <span class="nav-text">简单架构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#设计思想"><span class="nav-number">1.2.</span> <span class="nav-text">设计思想</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#四大组件"><span class="nav-number">1.3.</span> <span class="nav-text">四大组件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Downloader"><span class="nav-number">1.3.1.</span> <span class="nav-text">Downloader</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#PageProcessor"><span class="nav-number">1.3.2.</span> <span class="nav-text">PageProcessor</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Scheduler"><span class="nav-number">1.3.3.</span> <span class="nav-text">Scheduler</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Pipeline"><span class="nav-number">1.3.4.</span> <span class="nav-text">Pipeline</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#用于数据流转的对象"><span class="nav-number">1.4.</span> <span class="nav-text">用于数据流转的对象</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Request"><span class="nav-number">1.4.1.</span> <span class="nav-text">Request</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#page"><span class="nav-number">1.4.2.</span> <span class="nav-text">page</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ResultItems"><span class="nav-number">1.4.3.</span> <span class="nav-text">ResultItems</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Spider"><span class="nav-number">1.4.4.</span> <span class="nav-text">Spider</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#构建项目"><span class="nav-number">2.</span> <span class="nav-text">构建项目</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#引入依赖"><span class="nav-number">2.1.</span> <span class="nav-text">引入依赖</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#定制页面解析代码"><span class="nav-number">2.2.</span> <span class="nav-text">定制页面解析代码</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">croco</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v="></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v="></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v="></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v="></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v="></script>
+<script type="text/javascript" src="/js/src/post-details.js?v="></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v="></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

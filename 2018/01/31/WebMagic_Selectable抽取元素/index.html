@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="croco" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="webmagic 获取网页内容Selectable相关的抽取元素链式API是WebMagic的一个核心功能。使用Selectable接口，你可以直接完成页面元素的链式抽取，也无需去关心抽取的细节。 在WebMagic Xsoup 和 自定义Pipeline这篇文章的例子中可以看到，page.getHtml()返回的是一个Html对象，它实现了Selectable接口。这个接口包含一些重要的方法，分">
+<meta property="og:type" content="article">
+<meta property="og:title" content="WebMagic_Selectable抽取元素">
+<meta property="og:url" content="http:&#x2F;&#x2F;yoursite.com&#x2F;2018&#x2F;01&#x2F;31&#x2F;WebMagic_Selectable%E6%8A%BD%E5%8F%96%E5%85%83%E7%B4%A0&#x2F;index.html">
+<meta property="og:site_name" content="croco">
+<meta property="og:description" content="webmagic 获取网页内容Selectable相关的抽取元素链式API是WebMagic的一个核心功能。使用Selectable接口，你可以直接完成页面元素的链式抽取，也无需去关心抽取的细节。 在WebMagic Xsoup 和 自定义Pipeline这篇文章的例子中可以看到，page.getHtml()返回的是一个Html对象，它实现了Selectable接口。这个接口包含一些重要的方法，分">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http:&#x2F;&#x2F;webmagic.qiniudn.com&#x2F;oscimages&#x2F;151454_2T01_190591.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;webmagic.qiniudn.com&#x2F;oscimages&#x2F;151632_88Oq_190591.png">
+<meta property="og:updated_time" content="2019-11-23T01:52:17.827Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http:&#x2F;&#x2F;webmagic.qiniudn.com&#x2F;oscimages&#x2F;151454_2T01_190591.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/01/31/WebMagic_Selectable抽取元素/"/>
+
+
+
+
+
+  <title>WebMagic_Selectable抽取元素 | croco</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">croco</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">若非心中存在远方，恐怕早已失去方向</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/01/31/WebMagic_Selectable%E6%8A%BD%E5%8F%96%E5%85%83%E7%B4%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="croco">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="croco">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">WebMagic_Selectable抽取元素</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-01-31T23:52:45+00:00">
+                2018-01-31
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/webmagic/" itemprop="url" rel="index">
+                    <span itemprop="name">webmagic</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="webmagic-获取网页内容"><a href="#webmagic-获取网页内容" class="headerlink" title="webmagic 获取网页内容"></a>webmagic 获取网页内容</h2><p>Selectable相关的抽取元素链式API是WebMagic的一个核心功能。使用Selectable接口，你可以直接完成页面元素的链式抽取，也无需去关心抽取的细节。</p>
+<p>在WebMagic Xsoup 和 自定义Pipeline这篇文章的例子中可以看到，page.getHtml()返回的是一个Html对象，它实现了Selectable接口。这个接口包含一些重要的方法，分为两类：抽取部分和获取结果部分。</p>
+<p>抽取部分的API</p>
+<div><table><thead><tr><th>
+                方法
+            </th>
+            <th>
+                说明
+            </th>
+            <th>
+                示例
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                xpath(String xpath)
+            </td>
+            <td>
+                使用XPath选择
+            </td>
+            <td>
+                html.xpath("//div[@class=’title’]")
+            </td>
+        </tr>
+        <tr>
+            <td>
+                $(String selector)
+            </td>
+            <td>
+                使用Css选择器选择
+            </td>
+            <td>
+                html.$("div.title")
+            </td>
+        </tr>
+        <tr>
+            <td>
+                $(String selector,String attr)
+            </td>
+            <td>
+                使用Css选择器选择
+            </td>
+            <td>
+                html.$("div.title","text")
+            </td>
+        </tr>
+        <tr>
+            <td>
+                css(String selector)
+            </td>
+            <td>
+                功能同$()，使用Css选择器选择
+            </td>
+            <td>
+                html.css("div.title")
+            </td>
+        </tr>
+        <tr>
+            <td>
+                links()
+            </td>
+            <td>
+                选择所有链接
+            </td>
+            <td>
+                html.links()
+            </td>
+        </tr>
+        <tr>
+            <td>
+                regex(String regex)
+            </td>
+            <td>
+                使用正则表达式抽取
+            </td>
+            <td>
+                html.regex("\(.\*?)\")
+            </td>
+        </tr>
+        <tr>
+            <td>
+                regex(String regex,int group)
+            </td>
+            <td>
+                使用正则表达式抽取，并指定捕获组
+            </td>
+            <td>
+                html.regex("\(.\*?)\",1)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                replace(String regex, String replacement)
+            </td>
+            <td>
+                替换内容
+            </td>
+            <td>
+                html.replace("\","")
+            </td>
+        </tr>
+    </tbody>
+</table>  
+</div>
+
+<p>这部分抽取API返回的都是一个Selectable接口，意思是说，抽取是支持链式调用的。</p>
+<p>例如，我现在要抓取github上所有的Java项目，这些项目可以在<a href="https://github.com/search?l=Java&amp;p=1&amp;q=stars%3A%3E1&amp;s=stars&amp;type=Repositories搜索结果中看到。" target="_blank" rel="noopener">https://github.com/search?l=Java&amp;p=1&amp;q=stars%3A%3E1&amp;s=stars&amp;type=Repositories搜索结果中看到。</a><br>为了避免抓取范围太宽，我指定只从分页部分抓取链接。这个抓取规则是比较复杂的，要怎么写呢？<br><img src="http://webmagic.qiniudn.com/oscimages/151454_2T01_190591.png" alt=""></p>
+<p>首先看到页面的html结构是这个样子的：<br><img src="http://webmagic.qiniudn.com/oscimages/151632_88Oq_190591.png" alt=""></p>
+<p>那么可以先用CSS选择器提取出这个div，然后在取到所有的链接。为了保险起见，我再使用正则表达式限定一下提取出的URL的格式，那么最终的写法是这样子的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">List&lt;String&gt; urls = page.getHtml().css(&quot;div.pagination&quot;).links().regex(&quot;.*/search/\?l=java.*&quot;).all();</span><br><span class="line">page.addTargetRequests(urls);</span><br></pre></td></tr></table></figure>
+
+<h2 id="获取结果的API"><a href="#获取结果的API" class="headerlink" title="获取结果的API"></a>获取结果的API</h2><p>当链式调用结束时，我们一般都想要拿到一个字符串类型的结果。这时候就需要用到获取结果的API了。我们知道，一条抽取规则，无论是XPath、CSS选择器或者正则表达式，总有可能抽取到多条元素。WebMagic对这些进行了统一，你可以通过不同的API获取到一个或者多个元素。</p>
+<table>
+    <thead>
+        <tr>
+            <th>
+                方法
+            </th>
+            <th>
+                说明
+            </th>
+            <th>
+                示例
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                get()
+            </td>
+            <td>
+                返回一条String类型的结果
+            </td>
+            <td>
+                String link= html.links().get()
+            </td>
+        </tr>
+        <tr>
+            <td>
+                toString()
+            </td>
+            <td>
+                功能同get()，返回一条String类型的结果
+            </td>
+            <td>
+                String link= html.links().toString()
+            </td>
+        </tr>
+        <tr>
+            <td>
+                all()
+            </td>
+            <td>
+                返回所有抽取结果
+            </td>
+            <td>
+                List&nbsp;links= html.links().all()
+            </td>
+        </tr>
+        <tr>
+            <td>
+                match()
+            </td>
+            <td>
+                是否有匹配结果
+            </td>
+            <td>
+                if (html.links().match()){ xxx; }
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<p>我们知道页面只会有一条结果，那么可以使用selectable.get()或者selectable.toString()拿到这条结果。</p>
+<p>这里selectable.toString()采用了toString()这个接口，是为了在输出以及和一些框架结合的时候，更加方便。因为一般情况下，我们都只需要选择一个元素！</p>
+<p>selectable.all()则会获取到所有元素。</p>
+<p>好了，到现在为止，在回过头看看WebMagic Xsoup 和 自定义Pipeline中的GithubRepoPageProcessor，可能就觉得更加清晰了吧？指定main方法，已经可以看到抓取结果在控制台输出了。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/01/31/WebMagic_Xsoup%E5%92%8C%E8%87%AA%E5%AE%9A%E4%B9%89Pipeline/" rel="next" title="WebMagic Xsoup 和 自定义Pipeline">
+                <i class="fa fa-chevron-left"></i> WebMagic Xsoup 和 自定义Pipeline
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/02/01/Webmagic%E5%A4%84%E7%90%86POST%E3%80%81PUT%E3%80%81PATCH%E7%AD%89%E8%AF%B7%E6%B1%82/" rel="prev" title="Webmagic处理POST、PUT、PATCH等请求">
+                Webmagic处理POST、PUT、PATCH等请求 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.gif"
+                alt="croco" />
+            
+              <p class="site-author-name" itemprop="name">croco</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%7C%7Carchive">
+              
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">分类</span>
+                
+              </div>
+            
+
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#webmagic-获取网页内容"><span class="nav-number">1.</span> <span class="nav-text">webmagic 获取网页内容</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#获取结果的API"><span class="nav-number">2.</span> <span class="nav-text">获取结果的API</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">croco</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v="></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v="></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v="></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v="></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v="></script>
+<script type="text/javascript" src="/js/src/post-details.js?v="></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v="></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="croco" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="WebMagic的抽取主要用到了Jsoup和官方自带的工具Xsoup。   Jsoup是一个简单的HTML解析器，同时它支持使用CSS选择器的方式查找元素。关于Jsoup的学习文章，大家可以到这里进行学习！https:&#x2F;&#x2F;github.com&#x2F;code4craft&#x2F;jsoup-learning XsoupXsoup是WebMagic 作者基于Jsoup开发的一款XPath解析器。 旧版本的 Web">
+<meta property="og:type" content="article">
+<meta property="og:title" content="WebMagic Xsoup 和 自定义Pipeline">
+<meta property="og:url" content="http:&#x2F;&#x2F;yoursite.com&#x2F;2018&#x2F;01&#x2F;31&#x2F;WebMagic_Xsoup%E5%92%8C%E8%87%AA%E5%AE%9A%E4%B9%89Pipeline&#x2F;index.html">
+<meta property="og:site_name" content="croco">
+<meta property="og:description" content="WebMagic的抽取主要用到了Jsoup和官方自带的工具Xsoup。   Jsoup是一个简单的HTML解析器，同时它支持使用CSS选择器的方式查找元素。关于Jsoup的学习文章，大家可以到这里进行学习！https:&#x2F;&#x2F;github.com&#x2F;code4craft&#x2F;jsoup-learning XsoupXsoup是WebMagic 作者基于Jsoup开发的一款XPath解析器。 旧版本的 Web">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http:&#x2F;&#x2F;img.bbs.csdn.net&#x2F;upload&#x2F;201704&#x2F;12&#x2F;1491987070_762543.png">
+<meta property="og:updated_time" content="2019-11-23T01:51:56.867Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http:&#x2F;&#x2F;img.bbs.csdn.net&#x2F;upload&#x2F;201704&#x2F;12&#x2F;1491987070_762543.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/01/31/WebMagic_Xsoup和自定义Pipeline/"/>
+
+
+
+
+
+  <title>WebMagic Xsoup 和 自定义Pipeline | croco</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">croco</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">若非心中存在远方，恐怕早已失去方向</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/01/31/WebMagic_Xsoup%E5%92%8C%E8%87%AA%E5%AE%9A%E4%B9%89Pipeline/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="croco">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="croco">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">WebMagic Xsoup 和 自定义Pipeline</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-01-31T22:56:45+00:00">
+                2018-01-31
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/webmagic/" itemprop="url" rel="index">
+                    <span itemprop="name">webmagic</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>WebMagic的抽取主要用到了Jsoup和官方自带的工具Xsoup。  </p>
+<p>Jsoup是一个简单的HTML解析器，同时它支持使用CSS选择器的方式查找元素。关于Jsoup的学习文章，大家可以到这里进行学习！<a href="https://github.com/code4craft/jsoup-learning" target="_blank" rel="noopener">https://github.com/code4craft/jsoup-learning</a></p>
+<h2 id="Xsoup"><a href="#Xsoup" class="headerlink" title="Xsoup"></a>Xsoup</h2><p>Xsoup是WebMagic 作者基于Jsoup开发的一款XPath解析器。</p>
+<p>旧版本的 WebMagic 使用的解析器是 HtmlCleaner。再使用过程存在一些问题。主要问题是XPath出错定位不准确，并且其不太合理的代码结构，也难以进行定制。最终作者自己开发了 Xsoup 来取代 HtmlCleaner，使得更加符合爬虫开发的需要。经过测试，Xsoup的性能比HtmlCleaner要快一倍以上。</p>
+<p>Xsoup发展到现在，已经支持爬虫常用的语法，以下是一些已支持的语法对照表：<br><img src="http://img.bbs.csdn.net/upload/201704/12/1491987070_762543.png" alt=""></p>
+<p>扩展的XPath方法用法：  </p>
+<table>
+    <thead>
+        <tr>
+            <th>
+                Expression
+            </th>
+            <th>
+                Description
+            </th>
+            <th>
+                XPath1.0
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                text(n)
+            </td>
+            <td>
+                第n个直接文本子节点，为0表示所有
+            </td>
+            <td>
+                text() only
+            </td>
+        </tr>
+        <tr>
+            <td>
+                allText()
+            </td>
+            <td>
+                所有的直接和间接文本子节点
+            </td>
+            <td>
+                not support
+            </td>
+        </tr>
+        <tr>
+            <td>
+                tidyText()
+            </td>
+            <td>
+                所有的直接和间接文本子节点，并将一些标签替换为换行，使纯文本显示更整洁
+            </td>
+            <td>
+                not support
+            </td>
+        </tr>
+        <tr>
+            <td>
+                html()
+            </td>
+            <td>
+                内部html，不包括标签的html本身
+            </td>
+            <td>
+                not support
+            </td>
+        </tr>
+        <tr>
+            <td>
+                outerHtml()
+            </td>
+            <td>
+                内部html，包括标签的html本身
+            </td>
+            <td>
+                not support
+            </td>
+        </tr>
+        <tr>
+            <td>
+                regex(@attr,expr,group)
+            </td>
+            <td>
+                这里@attr和group均可选，默认是group0
+            </td>
+            <td>
+                not support
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<h2 id="定制Pipeline"><a href="#定制Pipeline" class="headerlink" title="定制Pipeline"></a>定制Pipeline</h2><p>Pileline是抽取结束后，进行处理的部分，它主要用于抽取结果的保存，也可以定制Pileline可以实现一些通用的功能。</p>
+<p>Pipeline的接口定义如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">public interface Pipeline &#123;</span><br><span class="line">    // ResultItems保存了抽取结果，它是一个Map结构，</span><br><span class="line">    // 在page.putField(key,value)中保存的数据，可以通过ResultItems.get(key)获取</span><br><span class="line">    public void process(ResultItems resultItems, Task task);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Pipeline其实就是将PageProcessor抽取的结果，继续进行了处理的，其实在Pipeline中完成的功能，你基本上也可以直接在PageProcessor实现，那么为什么会有Pipeline？有以下两个原因：  </p>
+<ul>
+<li>为了模块分离。“页面抽取”和“后处理、持久化”是爬虫的两个阶段，将其分离开来，一个是代码结构比较清晰，另一个是以后也可能将其处理过程分开，分开在独立的线程以至于不同的机器执行。</li>
+<li>Pipeline的功能比较固定，更容易做成通用组件。每个页面的抽取方式千变万化，但是后续处理方式则比较固定，例如保存到文件、保存到数据库这种操作，这些对所有页面都是通用的。WebMagic中就已经提供了控制台输出、保存到文件、保存为JSON格式的文件几种通用的Pipeline。</li>
+</ul>
+<p>在WebMagic里，一个Spider可以有多个Pipeline，使用Spider.addPipeline()即可增加一个Pipeline。这些Pipeline都会得到处理。  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">spider.addPipeline(new ConsolePipeline()).addPipeline(new FilePipeline())</span><br></pre></td></tr></table></figure>
+<p>实现输出结果到控制台，并且保存到文件的目标。</p>
+<p>在介绍PageProcessor时，我们使用了GithubRepoPageProcessor作为例子，其中某一段代码中，我们将结果进行了保存：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">public void process(Page page) &#123;</span><br><span class="line">    page.addTargetRequests(page.getHtml().links().regex(&quot;(https://github\\.com/\\w+/\\w+)&quot;).all());</span><br><span class="line">    page.addTargetRequests(page.getHtml().links().regex(&quot;(https://github\\.com/\\w+)&quot;).all());</span><br><span class="line">    //保存结果author，这个结果会最终保存到ResultItems中</span><br><span class="line">    page.putField(&quot;author&quot;, page.getUrl().regex(&quot;https://github\\.com/(\\w+)/.*&quot;).toString());</span><br><span class="line">    page.putField(&quot;name&quot;, page.getHtml().xpath(&quot;//h1[@class=&apos;entry-title public&apos;]/strong/a/text()&quot;).toString());</span><br><span class="line">    if (page.getResultItems().get(&quot;name&quot;)==null)&#123;</span><br><span class="line">        //设置skip之后，这个页面的结果不会被Pipeline处理</span><br><span class="line">        page.setSkip(true);</span><br><span class="line">    &#125;</span><br><span class="line">    page.putField(&quot;readme&quot;, page.getHtml().xpath(&quot;//div[@id=&apos;readme&apos;]/tidyText()&quot;));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>现在我们想将结果保存到控制台，要怎么做呢？ConsolePipeline可以完成这个工作</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public class ConsolePipeline implements Pipeline &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void process(ResultItems resultItems, Task task) &#123;</span><br><span class="line">        System.out.println(&quot;get page: &quot; + resultItems.getRequest().getUrl());</span><br><span class="line">        //遍历所有结果，输出到控制台，上面例子中的&quot;author&quot;、&quot;name&quot;、&quot;readme&quot;都是一个key，其结果则是对应的value</span><br><span class="line">        for (Map.Entry&lt;String, Object&gt; entry : resultItems.getAll().entrySet()) &#123;</span><br><span class="line">            System.out.println(entry.getKey() + &quot;:\t&quot; + entry.getValue());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="将结果保存到MySQL"><a href="#将结果保存到MySQL" class="headerlink" title="将结果保存到MySQL"></a>将结果保存到MySQL</h2><p>在Java里，我们有很多方式将数据保存到MySQL，例如jdbc、dbutils、spring-jdbc、MyBatis等工具。这些工具都可以完成同样的事情，只不过功能和使用复杂程度不一样。如果使用jdbc，那么我们只需要从ResultItems取出数据，进行保存即可。</p>
+<p>如果我们会使用ORM框架来完成持久化到MySQL的工作，就会面临一个问题：这些框架一般都要求保存的内容是一个定义好结构的对象，而不是一个key-value形式的ResultItems。以MyBatis为例，我们使用MyBatis-Spring可以定义这样一个DAO：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public interface JobInfoDAO &#123;</span><br><span class="line">    @Insert(&quot;insert into JobInfo (`title`,`salary`,`company`,`description`,`requirement`,`source`,`url`,`urlMd5`) values (#&#123;title&#125;,#&#123;salary&#125;,#&#123;company&#125;,#&#123;description&#125;,#&#123;requirement&#125;,#&#123;source&#125;,#&#123;url&#125;,#&#123;urlMd5&#125;)&quot;)</span><br><span class="line">    public int add(LieTouJobInfo jobInfo);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="注解模式"><a href="#注解模式" class="headerlink" title="注解模式"></a>注解模式</h2><p>注解模式下，WebMagic内置了一个PageModelPipeline：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public interface PageModelPipeline&lt;T&gt; &#123;</span><br><span class="line">    //这里传入的是处理好的对象</span><br><span class="line">    public void process(T t, Task task);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这时，我们可以很优雅的定义一个JobInfoDaoPipeline，来实现这个功能：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">@Component(&quot;JobInfoDaoPipeline&quot;)</span><br><span class="line">public class JobInfoDaoPipeline implements PageModelPipeline&lt;LieTouJobInfo&gt; &#123;</span><br><span class="line">    @Resource</span><br><span class="line">    private JobInfoDAO jobInfoDAO;</span><br><span class="line">    @Override</span><br><span class="line">    public void process(LieTouJobInfo lieTouJobInfo, Task task) &#123;</span><br><span class="line">        //调用MyBatis DAO保存结果</span><br><span class="line">        jobInfoDAO.add(lieTouJobInfo);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="基本Pipeline模式"><a href="#基本Pipeline模式" class="headerlink" title="基本Pipeline模式"></a>基本Pipeline模式</h2><p>至此，结果保存就已经完成了！那么如果我们使用原始的Pipeline接口，要怎么完成呢？其实答案也很简单，如果你要保存一个对象，那么就需要在抽取的时候，将它保存为一个对象：  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">public void process(Page page) &#123;</span><br><span class="line">    page.addTargetRequests(page.getHtml().links().regex(&quot;(https://github\\.com/\\w+/\\w+)&quot;).all());</span><br><span class="line">    page.addTargetRequests(page.getHtml().links().regex(&quot;(https://github\\.com/\\w+)&quot;).all());</span><br><span class="line">    GithubRepo githubRepo = new GithubRepo();</span><br><span class="line">    githubRepo.setAuthor(page.getUrl().regex(&quot;https://github\\.com/(\\w+)/.*&quot;).toString());</span><br><span class="line">    githubRepo.setName(page.getHtml().xpath(&quot;//h1[@class=&apos;entry-title public&apos;]/strong/a/text()&quot;).toString());</span><br><span class="line">    githubRepo.setReadme(page.getHtml().xpath(&quot;//div[@id=&apos;readme&apos;]/tidyText()&quot;).toString());</span><br><span class="line">    if (githubRepo.getName() == null) &#123;</span><br><span class="line">        //skip this page</span><br><span class="line">        page.setSkip(true);</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        page.putField(&quot;repo&quot;, githubRepo);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在Pipeline中，只要使用</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GithubRepo githubRepo = (GithubRepo)resultItems.get(&quot;repo&quot;);</span><br></pre></td></tr></table></figure>
+<h2 id="WebMagic-自带的Pipeline"><a href="#WebMagic-自带的Pipeline" class="headerlink" title="WebMagic 自带的Pipeline"></a>WebMagic 自带的Pipeline</h2><p>WebMagic中已经提供了将结果输出到控制台、保存到文件和JSON格式保存的几个Pipeline：</p>
+<table>
+    <thead>
+        <tr>
+            <th>
+                类
+            </th>
+            <th>
+                说明
+            </th>
+            <th>
+                备注
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                ConsolePipeline
+            </td>
+            <td>
+                输出结果到控制台
+            </td>
+            <td>
+                抽取结果需要实现toString方法
+            </td>
+        </tr>
+        <tr>
+            <td>
+                FilePipeline
+            </td>
+            <td>
+                保存结果到文件
+            </td>
+            <td>
+                抽取结果需要实现toString方法
+            </td>
+        </tr>
+        <tr>
+            <td>
+                JsonFilePipeline
+            </td>
+            <td>
+                JSON格式保存结果到文件
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                ConsolePageModelPipeline
+            </td>
+            <td>
+                (注解模式)输出结果到控制台
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                FilePageModelPipeline
+            </td>
+            <td>
+                (注解模式)保存结果到文件
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                JsonFilePageModelPipeline
+            </td>
+            <td>
+                (注解模式)JSON格式保存结果到文件
+            </td>
+            <td>
+                想要持久化的字段需要有getter方法
+            </td>
+        </tr>
+    </tbody>
+</table>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/01/31/webmagic%E5%85%A5%E9%97%A8/" rel="next" title="webmagic入门">
+                <i class="fa fa-chevron-left"></i> webmagic入门
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/01/31/WebMagic_Selectable%E6%8A%BD%E5%8F%96%E5%85%83%E7%B4%A0/" rel="prev" title="WebMagic_Selectable抽取元素">
+                WebMagic_Selectable抽取元素 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.gif"
+                alt="croco" />
+            
+              <p class="site-author-name" itemprop="name">croco</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%7C%7Carchive">
+              
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">分类</span>
+                
+              </div>
+            
+
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Xsoup"><span class="nav-number">1.</span> <span class="nav-text">Xsoup</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#定制Pipeline"><span class="nav-number">2.</span> <span class="nav-text">定制Pipeline</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#将结果保存到MySQL"><span class="nav-number">3.</span> <span class="nav-text">将结果保存到MySQL</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#注解模式"><span class="nav-number">4.</span> <span class="nav-text">注解模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基本Pipeline模式"><span class="nav-number">5.</span> <span class="nav-text">基本Pipeline模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#WebMagic-自带的Pipeline"><span class="nav-number">6.</span> <span class="nav-text">WebMagic 自带的Pipeline</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">croco</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v="></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v="></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v="></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v="></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v="></script>
+<script type="text/javascript" src="/js/src/post-details.js?v="></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v="></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
